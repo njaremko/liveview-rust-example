@@ -1,30 +1,14 @@
-use askama::Template;
-use actix_web::{HttpRequest, HttpResponse, Responder};
 use crate::Result;
 
-#[derive(Template)]
-#[template(path = "base.html", escape = "none")]
-pub struct BaseTemplate {
-    pub title: String,
-    pub content: String,
-}
-
-#[derive(Template)]
+#[derive(askama::Template, Clone, Debug, Default)]
 #[template(path = "hello.html")]
 pub struct ExTemplate {
     pub name: String,
     pub count: i32,
 }
 
-pub(crate) fn render(req: HttpRequest) -> Result<HttpResponse> {
-    let hello = BaseTemplate {
-        title: "Example".into(),
-        content: ExTemplate {
-            name: "fish".into(),
-            count: 0,
-        }.render()?,
-    };
-
-    Ok(HttpResponse::Ok()
-        .body(hello.render()?))
+impl live_view::Template for ExTemplate {
+    fn render(&self) -> Result<String> {
+        Ok(<Self as askama::Template>::render(&self)?)
+    }
 }
