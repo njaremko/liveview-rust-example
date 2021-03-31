@@ -1,5 +1,5 @@
 #[derive(askama::Template, Clone, Debug, Default)]
-#[template(path = "app.html")]
+#[template(path = "app.html", escape = "none")]
 pub struct AppTemplate {
     pub body: String
 }

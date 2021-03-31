@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "liveview-rust": "^0.0.8"
+  }
+}
