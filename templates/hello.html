@@ -1,11 +1,25 @@
 <h1>{{ name }}</h1>
 <p>This is my {{ name }}: {{ count }}</p>
+
 <button rust-click="dec">-</button>
 <button rust-click="inc">+</button>
+
 <button rust-click="header">Change Header</button>
 
+<div>
+  <span>{{ touching_text }}</span>
+  <button rust-mouseover="touching-button" rust-mouseout="touching-button">
+    I'm a button
+  </button>
+</div>
+
 <form rust-submit="header-submit" id="header-form">
-    <label for="header-input">New Header</label>
-    <input type="text" id="header-input" name="header-input" rust-keydown="header">
+  <label for="header-input">New Header</label>
+  <input
+    type="text"
+    id="header-input"
+    name="header-input"
+    rust-keydown="header"
+  />
 </form>
-<input type="submit" form="header-form" value="Submit">
+<input type="submit" form="header-form" value="Submit" />

@@ -1338,9 +1338,7 @@ checksum = "7fb9b38af92608140b86b693604b9ffcc5824240a484d1ecd4795bacb2fe88f3"
 
 [[package]]
 name = "live-view"
-version = "0.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a1aa5e4b158451aaae39efb0506535fb58756453b98740138f0ef86a100edd9"
+version = "0.0.8"
 dependencies = [
  "actix",
  "actix-web 4.0.0-beta.4",

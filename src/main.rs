@@ -2,18 +2,22 @@ use crate::template::ExTemplate;
 use actix_web::{error, get, web, App, HttpServer, Responder};
 use actix_web::{HttpRequest, HttpResponse};
 use actix_web_actors::ws;
-use live_view::BaseTemplate;
 use live_view::LiveView;
 use live_view::StateSocket;
 use live_view::Template;
+use template::AppTemplate;
 mod template;
 
 #[get("/")]
 async fn initial_load(_req: HttpRequest) -> impl Responder {
-    let state = BaseTemplate {
-        title: "Example".into(),
-        body: ExTemplate::default().render().unwrap(),
-        ..BaseTemplate::default()
+    let state = AppTemplate {
+        body: ExTemplate {
+            touching_text: "Look at that button under me".into(),
+            ..ExTemplate::default()
+        }
+        .render()
+        .unwrap(),
+        ..AppTemplate::default()
     };
     state
         .render()
@@ -35,6 +39,14 @@ async fn start_socket(req: HttpRequest, stream: web::Payload) -> impl Responder 
         state.name = "You changed the header!".into();
         Some(state.render().unwrap())
     });
+    live_view.on_mouseover("touching-button", |_event, state| {
+        state.touching_text = "You're touching my button!".into();
+        Some(state.render().unwrap())
+    });
+    live_view.on_mouseout("touching-button", |_event, state| {
+        state.touching_text = "Thank's for not touching my button :)".into();
+        Some(state.render().unwrap())
+    });
     live_view.on_submit("header-submit", |event, state| {
         if let Some(new_name) = &event.data {
             let split: Vec<&str> = new_name.split('=').collect();
@@ -44,7 +56,7 @@ async fn start_socket(req: HttpRequest, stream: web::Payload) -> impl Responder 
             None
         }
     });
-    live_view.on_input("header", |event, state| {
+    live_view.on_keydown("header", |event, state| {
         event.data.clone().map(|new_name| {
             state.name = new_name;
             state.render().unwrap()
