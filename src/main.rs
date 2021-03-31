@@ -1,28 +1,27 @@
 use crate::template::ExTemplate;
-use actix_web::{web, App, HttpServer};
+use actix_web::{error, get, web, App, HttpServer, Responder};
 use actix_web::{HttpRequest, HttpResponse};
 use actix_web_actors::ws;
-use live_view::StateSocket;
-use live_view::LiveView;
-use live_view::Template;
 use live_view::BaseTemplate;
+use live_view::LiveView;
+use live_view::StateSocket;
+use live_view::Template;
 mod template;
 
-pub type Result<T> = std::result::Result<T, failure::Error>;
-
-fn initial_load(_req: HttpRequest) -> Result<HttpResponse> {
+#[get("/")]
+async fn initial_load(_req: HttpRequest) -> impl Responder {
     let state = BaseTemplate {
         title: "Example".into(),
-        body: ExTemplate::default().render()?,
+        body: ExTemplate::default().render().unwrap(),
         ..BaseTemplate::default()
     };
-    Ok(HttpResponse::Ok().body(state.render()?))
+    state
+        .render()
+        .map(|b| HttpResponse::Ok().body(b))
+        .map_err(|e| error::ErrorInternalServerError(e))
 }
 
-fn start_socket(
-    req: HttpRequest,
-    stream: web::Payload,
-) -> std::result::Result<HttpResponse, actix_web::Error> {
+async fn start_socket(req: HttpRequest, stream: web::Payload) -> impl Responder {
     let mut live_view: LiveView<ExTemplate> = LiveView::default();
     live_view.on_click("inc", |_event, state| {
         state.count += 1;
@@ -58,13 +57,14 @@ fn start_socket(
     ws::start(actor, &req, stream)
 }
 
-fn main() -> Result<()> {
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .service(web::resource("/ws/").route(web::get().to(start_socket)))
-            .route("/", web::get().to(initial_load))
+            .service(initial_load)
     })
     .bind("127.0.0.1:8000")?
-    .run()?;
-    Ok(())
+    .run()
+    .await
 }

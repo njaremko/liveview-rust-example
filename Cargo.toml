@@ -5,12 +5,12 @@ authors = ["Nathan Jaremko <nathan@jaremko.ca>"]
 edition = "2018"
 
 [dependencies]
-actix-web = "1.0"
-actix-web-actors = "1.0"
-actix = "0.8"
-actix-files = "0.1"
+actix-web = "4.0.0-beta.4"
+actix-web-actors = "4.0.0-beta.3"
+actix = "0.11"
+actix-files = "0.5"
 failure = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-askama = "0.8"
-live-view = { version = "0.0.3", path = "../liveview" }
+askama = "0.10"
+live-view = "0.0.5"

@@ -1,5 +1,3 @@
-use crate::Result;
-
 #[derive(askama::Template, Clone, Debug, Default)]
 #[template(path = "hello.html")]
 pub struct ExTemplate {
@@ -8,7 +6,7 @@ pub struct ExTemplate {
 }
 
 impl live_view::Template for ExTemplate {
-    fn render(&self) -> Result<String> {
+    fn render(&self) -> Result<String, Box<dyn std::error::Error>> {
         Ok(<Self as askama::Template>::render(&self)?)
     }
 }
